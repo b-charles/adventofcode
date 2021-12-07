@@ -5,8 +5,5 @@ sum( abs( H - median(H) ) )
 
 %%
 
-s = @(m) m .* (m+1) / 2;
-fuel = @(f) sum( s( abs( H - f ) ) );
-t = round( fminsearch( fuel, mean(H) ) );
-
-fuel( t )
+t = round( mean(H) + mean( H > mean(H) ) - 0.5 );
+uint64( sum( abs(H-t) .* ( abs(H-t)+1 ) /2 ) )
