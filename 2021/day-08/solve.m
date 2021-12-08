@@ -5,31 +5,20 @@ sum( cellfun( @length, regexp( lines, '(?<=\|.*)\<(\w{2}|\w{4}|\w{3}|\w{7})\>' )
 
 %%
 
-fp = @(n) sum( 7.^(char(n)-'a') );
-M = cellfun( fp, { 'abcefg', 'cf', 'acdeg', 'acdfg', 'bcdf', 'abdfg', 'abdefg', 'acf', 'abcdefg', 'abcdfg' } );
+f = @(w) accumarray( cell2mat(w)'-'a'+1, cell2mat( cellfun( @(w) length(w) * ones( 1, length(w) ), w, 'UniformOutput', false ) ), [ 7 1 ], @prod )';
+g = @(v, P) cellfun( @(v) prod( primes(17)' .^ accumarray( P(v-'a'+1)', 1, [7 1] ) ), v );
 
-P = perms(0:6);
-np = size(P,1);
+W = { 'abcefg' 'cf' 'acdeg' 'acdfg' 'bcdf' 'abdfg' 'abdefg' 'acf' 'abcdefg' 'abcdfg' };
+F = f( W );
+G = g( W, 1:7 );
 
 n = length( lines );
-R = zeros( 4, n );
-
-wb = waitbar( 0, 'Computing...' );
+R = zeros( n, 4 );
 
 for l = 1:n
-    waitbar(l/n,wb);
-    W = regexp( lines(l), '\<\w+\>', 'match' );
-    for i = 1:np
-        p = P(i,:);
-        v = arrayfun( @(w) sum( 7 .^ p( char(w) - 'a' + 1 ) ), W );
-        [ok,loc] = ismember( v, M );
-        if all(ok)
-            R(:,l) = loc(end-3:end) - 1;
-            break
-        end
-    end
+  L = arrayfun( @char, regexp( lines(l), '\<\w+\>', 'match' ), 'UniformOutput', false );
+  [ ~, P ] = ismember( f( L(1:10) ), F );
+  [ ~, R(l,:) ] = ismember( g( L(11:14), P ), G );
 end
 
-delete(wb);
-
-sum( [1000 100 10 1] * R )
+sum( (R-1) * [1000 100 10 1]' )
