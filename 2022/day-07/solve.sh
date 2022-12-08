@@ -27,7 +27,7 @@ find root -mindepth 1 -type f -exec bash -c \
 
 # Solve
 
-echo "\033[0;35mPart 1:\033[0m $(find sizes -type f -size -100000c -printf "%s\n" | paste -sd+ | bc)"
+echo "\033[0;35mPart 1:\033[0m $(find sizes -type f -size -100000c | xargs cat | wc -c)"
 
 echo "\033[0;35mPart 2:\033[0m $(find sizes -type f -size +$(($(ls -l sizes/root | cut -d " " -f 5) - 40000000))c -printf "%s\n" | awk '{if(min==""){min=$1}; if($1<min){min=$1}} END {print min}')"
 
